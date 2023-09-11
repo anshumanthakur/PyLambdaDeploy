@@ -1,0 +1,38 @@
+stages:
+  - provisioning_infra
+
+
+provisioning_infra:
+  image: python:3.10
+  stage: provisioning_infra
+  tags:
+    - fusion-docker
+  before_script:
+    # Set environment variables for AWS credentials and region
+    - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+    - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+    - export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
+    - export envType=$env
+    - export TF_VAR_CLOUD_REGION=$AWS_DEFAULT_REGION
+  script:
+    # Change to the 'config' directory
+    - cd config
+    # Download and install Terraform
+    - wget https://releases.hashicorp.com/terraform/1.3.7/terraform_1.3.7_linux_amd64.zip
+    - unzip terraform_1.3.7_linux_amd64.zip
+    - mv terraform /usr/local/bin
+    # Display Terraform version
+    - terraform --version
+    # Print environment variables for debugging (optional)
+    - echo $BUCKET_NAME
+    - echo $PROJECT_NAME
+    # Initialize Terraform with backend configuration
+    - terraform init -backend-config="bucket=$BUCKET_NAME" -backend-config="key=terraform/${PROJECT_NAME}/${envType}/terraform.tfstate" -backend-config="region=$TF_VAR_CLOUD_REGION"
+    # Create an execution plan and save it to a file
+    - terraform plan -out "planfile"
+    # Apply the Terraform changes using the saved execution plan
+    - terraform apply -input=false "planfile"
+  environment:
+    # Set the environment name to the GitLab CI/CD branch or tag name
+    name: $CI_COMMIT_REF_NAME
+  when: manual # This stage should be triggered manually
