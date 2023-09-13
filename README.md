@@ -42,3 +42,13 @@ This repository uses custom Terraform modules to provision resources. The module
 2. Update the Terraform variables and configuration files as needed. Ensure that you replace sensitive information such as AWS access keys with environment variables or use a secure method to manage secrets.
 
 3. Initialize Terraform and download the required providers:
+   `terraform init`
+4. Review the action plan
+   `terraform plan`
+5. Apply the Terraform configuration to create or update AWS resources:
+   `terraform apply`
+6. Verify that the resources have been provisioned correctly in your AWS account.
+
+## Usage
+This infrastructure can serve as a starting point for your serverless applications on AWS. Customize the Terraform configurations and modules to match your specific requirements. Additionally, you can extend the infrastructure to include additional AWS services and resources as needed.
+
